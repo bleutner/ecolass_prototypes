@@ -1,1 +1,140 @@
-init
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name='viewport'
+	content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+<title>ECoLaSS Grassland Prototype</title>
+
+<link rel="stylesheet"
+	href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+
+<style>
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body, table, tr, td, th, div, h1, h2, input {
+	font-family: "Calibri", "Trebuchet MS", "Ubuntu", Serif;
+	font-size: 11pt;
+	color: #555;
+}
+
+#map {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+}
+
+info h4 {
+	margin: 0 0 5px;
+	color: #777;
+}
+
+.leaflet-control-layers {
+	padding: 6px 8px;
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+	border-radius: 5px;
+}
+
+.leaflet-control-layers-separator {
+	border-top-color: #999;
+}
+
+.legend {
+	text-align: left;
+	line-height: 18px;
+	color: #555;
+}
+
+.legend i {
+	width: 18px;
+	height: 18px;
+	float: left;
+	margin-right: 8px;
+	opacity: 0.7;
+}
+</style>
+
+</head>
+<body>
+
+	<div id="map"></div>
+
+	<script>
+		// Base layers
+
+		//  .. CartoDB Positron
+		var cartodb = L.tileLayer(
+						'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+						{
+							attribution : '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+						});
+
+		var esri = L.tileLayer(
+						'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+						{
+							attribution : 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+						});
+
+		// Overlay layers (TMS)
+		var lyr = L.tileLayer('tiles/{z}/{x}/{y}.png', {
+			tms : true,
+			opacity : 1,
+			attribution : "ECoLaSS"
+		});
+
+		// Map
+		var map = L.map('map', {
+			center : [ 50.0402132433, 4.41149575491 ],
+			zoom : 12,
+			minZoom : 6,
+			maxZoom : 12,
+			layers : [ esri, cartodb, lyr ]
+		});
+
+		var basemaps = {
+			"CartoDB Positron" : cartodb,
+			"ESRI_World" : esri
+		}
+
+		var overlaymaps = {
+			"Grassland layer" : lyr
+		}
+
+		// Legend
+		var legend = L.control({
+			position : "bottomright"
+		});
+		legend.onAdd = function(map) {
+			var div = L.DomUtil.create('div', 'leaflet-control-layers legend');
+			var labels = [ "grassland" ];
+			var colors = [ "#a3c738" ];
+			div.innerHTML = '<div><b>Legend</b></div>';
+			for (var i = 0; i < labels.length; i++) {
+				div.innerHTML += '<i style="background:'+colors[i]+'">&nbsp;</i>&nbsp;'
+						+ labels[i] + '<br/>';
+			}
+			return div;
+		}
+
+		// Add base layers
+		L.control.layers(basemaps, overlaymaps, {
+			collapsed : false
+		}).addTo(map);
+
+		// Fit to overlay bounds (SW and NE points with (lat, lon))
+		map.fitBounds([ [ 48.4879095436, 6.24145810836 ],
+				[ 51.5925169429, 2.58153340145 ] ]);
+
+		legend.addTo(map);
+		L.control.scale().addTo(map);
+	</script>
+
+</body>
+</html>
+
