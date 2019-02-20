@@ -82,7 +82,7 @@ info h4 {
 						});
 
 		// Overlay layers (TMS)
-		var lyr = L.tileLayer('tiles/{z}/{x}/{y}.png', {
+		var lyr = L.tileLayer('https://github.com/bleutner/ecolass_prototypes/raw/gh-pages/tiles/{z}/{x}/{y}.png', {
 			tms : true,
 			opacity : 1,
 			attribution : "ECoLaSS"
@@ -94,7 +94,7 @@ info h4 {
 			zoom : 12,
 			minZoom : 6,
 			maxZoom : 12,
-			layers : [ esri, cartodb, lyr ]
+			layers : [ esri,  lyr ]
 		});
 
 		var basemaps = {
